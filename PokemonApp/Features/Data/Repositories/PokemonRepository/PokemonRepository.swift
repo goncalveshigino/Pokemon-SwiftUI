@@ -9,6 +9,7 @@ import Foundation
 
 protocol PokemonRepository {
     func getPokemon(paginaNumber: String?) async throws -> PokemonListResponse
+    func getDetailedPokemon(id: Int) async throws -> DetailPokemonResponse
 }
 
 
@@ -31,7 +32,16 @@ class DefaultPokemonRepository: PokemonRepository {
             let endpoint = RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.pagination)\(paginaNumber ?? "1")"
             let response: PokemonListResponse = try await apiService.getDataFromGetRequest(from: endpoint)
             self.save(with: paginaNumber ?? "1", response: response)
-            print(response.results)
+            return response
+        } catch {
+            throw error
+        }
+    }
+    
+    func getDetailedPokemon(id: Int) async throws -> DetailPokemonResponse {
+        do {
+            let endpoint = "https://pokeapi.co/api/v2/pokemon/\(id)/"
+            let response: DetailPokemonResponse = try await apiService.getDataFromGetRequest(from: endpoint)
             return response
         } catch {
             throw error
