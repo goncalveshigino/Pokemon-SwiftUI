@@ -7,6 +7,8 @@
 //https://pokeapi.co/api/v2/pokemon/{id or name}/
 //pokemon?limit=100000&offset=0
 
+//https://pokeapi.co/api/v2/pokemon/3/ details
+
 import Foundation
 
 enum RemoteURL {
