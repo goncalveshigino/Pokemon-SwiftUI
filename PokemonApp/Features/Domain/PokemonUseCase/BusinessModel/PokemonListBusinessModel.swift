@@ -30,7 +30,7 @@ struct InfoBusinessModel {
 }
 
 // MARK: - Result
-struct PokemonBusinessModel {
+struct PokemonBusinessModel: Codable, Equatable  {
     let name: String
     let url: String
     
