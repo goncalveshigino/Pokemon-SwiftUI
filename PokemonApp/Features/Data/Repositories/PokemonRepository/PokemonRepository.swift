@@ -8,8 +8,9 @@
 import Foundation
 
 protocol PokemonRepository {
-    func getPokemon(paginaNumber: String?) async throws -> PokemonListResponse
+    func getPokemon(pageNumber: String?) async throws -> PokemonListResponse
     func getDetailedPokemon(id: Int) async throws -> DetailPokemonResponse
+    func searchCharacter(by name: String, and pageNumber: String?) async throws -> PokemonListResponse
 }
 
 
@@ -25,13 +26,13 @@ class DefaultPokemonRepository: PokemonRepository {
     }
     
     
-    func getPokemon(paginaNumber: String?) async throws -> PokemonListResponse {
-        if let cacheResponse = retrieve(by: paginaNumber ?? "1") { return cacheResponse }
+    func getPokemon(pageNumber: String?) async throws -> PokemonListResponse {
+        if let cacheResponse = retrieve(by: pageNumber ?? "1") { return cacheResponse }
         
         do {
-            let endpoint = RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.pagination)\(paginaNumber ?? "1")"
+            let endpoint = RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.pagination)\(pageNumber ?? "1")"
             let response: PokemonListResponse = try await apiService.getDataFromGetRequest(from: endpoint)
-            self.save(with: paginaNumber ?? "1", response: response)
+            self.save(with: pageNumber ?? "1", response: response)
             return response
         } catch {
             throw error
@@ -47,6 +48,14 @@ class DefaultPokemonRepository: PokemonRepository {
             throw error
         }
     }
+    
+    func searchCharacter(by name: String, and pageNumber: String?) async throws -> PokemonListResponse {
+        do {
+            return try await apiService.getDataFromGetRequest(from: getEndPointForPagination(by: name, and: pageNumber))
+        } catch {
+            throw error
+        }
+    }
 }
 
 
@@ -57,5 +66,13 @@ extension DefaultPokemonRepository {
     
     private func save(with pageNumber: String, response: PokemonListResponse) {
         cache[pageNumber] = response
+    }
+    
+    private func getEndPointForPagination(by name: String, and pageNumber: String?) -> String {
+        if let pageNumber = pageNumber {
+            return RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.name)\(name)" + "\(RemoteURL.searchPagination)\(pageNumber)"
+        } else {
+            return RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.name)\(name)"
+        }
     }
 }

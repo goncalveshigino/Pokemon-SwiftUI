@@ -32,11 +32,34 @@ extension PokemonRepository_Tests {
     
     func testSuccess_ShouldRetornsAllPokemos() async {
         do {
-            let response = try await sut?.getPokemon(paginaNumber: nil)
+            let response = try await sut?.getPokemon(pageNumber: nil)
             XCTAssertTrue(response?.results.first?.name == "venusaur")
         } catch {
             XCTFail("Always receive a response and not throw an error")
         }
     }
     
+    
+    func testSuccess_searchPokemon() async {
+        do {
+           let response = try await sut?.searchCharacter(by: "venusaur", and: nil)
+            XCTAssertTrue(response?.results.first?.name == "venusaur")
+        } catch {
+            XCTFail("Always receive a response and not throw an error")
+        }
+    }
+}
+
+
+//MARK: - Failure Tests
+extension PokemonRepository_Tests {
+    
+    func testFailureCase_getPokemonList() async {
+        do {
+           let _ = try await sutFailure?.getPokemon(pageNumber: nil)
+            XCTFail("This test should throw an error")
+        } catch {
+            //test passed
+        }
+    }
 }

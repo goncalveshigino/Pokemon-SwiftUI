@@ -17,8 +17,14 @@ import Observation
     var viewError: AppError?
     var hasError: Bool = false
     var isLoading: Bool = false
+    var searchText = ""
     private var currentPage: Int = 1
     
+    
+   
+   
+    
+ 
     init(useCase: PokemonUseCase = DefaultPokemonUseCase()) {
         self.useCase = useCase
     }
@@ -30,7 +36,7 @@ import Observation
         isLoading = true
         
         do {
-            let response = try await useCase.getPokemon(paginaNumber: "\(currentPage)")
+            let response = try await useCase.getPokemon(pageNumber: "\(currentPage)")
             
             pokemonList += response.results
             hasError = false
@@ -48,7 +54,7 @@ import Observation
         
         do {
            let response = try await useCase.getDetailedPokemon(id: id)
-            print(response.sprites)
+            
         } catch {
             
         }
@@ -60,5 +66,7 @@ import Observation
         }
         return 0
     }
+        
+  
 }
 

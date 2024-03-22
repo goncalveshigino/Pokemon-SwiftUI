@@ -14,7 +14,10 @@ import Foundation
 enum RemoteURL {
     static let baseUrl: String = "https://pokeapi.co/api/v2/"
     static let pokemon: String = "pokemon"
-    static let pagination = "?offset"
-    static let searchPagination = "&limit"
+    static let pagination = "?offset="
+    static let searchPagination = "&limit="
     static let name = "/?name"
+    
 }
+
+
