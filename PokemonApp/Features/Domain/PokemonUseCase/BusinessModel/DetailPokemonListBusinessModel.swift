@@ -9,7 +9,7 @@
 import Foundation
 
 // MARK: - DetailPokemonResponse
-struct DetailPokemonListBusinessModel: Codable {
+struct DetailPokemonBusinessModel: Codable {
     let abilities: [AbilityBusinessModel]
     let height: Int
     let id: Int

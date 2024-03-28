@@ -12,10 +12,14 @@ struct HomeView: View {
     
     @Bindable var vm: HomePageViewModel
     let pokemon: PokemonResponse
+    @State var selectedPokemon: PokemonBusinessModel?
+
     
     @State var contentHasScrolled = false
     @State var showNav = false
     @State var showDetail: Bool = false
+
+
     
     private let adaptiveColumns = [
         GridItem(.adaptive(minimum: 150, maximum: 170))
@@ -69,28 +73,36 @@ struct HomeView: View {
         var pokemonListView: some View {
             LazyVGrid(columns: adaptiveColumns, spacing: 10) {
                 ForEach(Array(vm.pokemonList.enumerated()), id: \.offset) { index, pokemon in
-                    ZStack {
-                        CustomBackgroundView()
-                        
-                        VStack {
-                            if let url = URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(index + 1).png") {
-                                AsyncImageView(url: url)
-                                    .frame(width: 150, height: 150)
-                                }
+                    NavigationLink {
+                        PokemonDetailPage(vm: vm, pokemon: pokemon)
+                    } label: {
+                        ZStack {
+                            CustomBackgroundView()
                             
-                            Text("\(pokemon.name.capitalized)")
-                                .font(.system(size: 16, weight: .regular, design: .monospaced))
-                                .padding(.bottom, 20)
-                            
+                            VStack {
+                                if let url = URL(string: RemoteURL.imageUrl + "\(index + 1).png") {
+                                    AsyncImageView(url: url)
+                                        .frame(width: 150, height: 150)
+                                    }
+                                
+                                Text("\(pokemon.name.capitalized)")
+                                    .font(.system(size: 16, weight: .regular, design:
+                                            .monospaced))
+                                    .foregroundStyle(Color.white)
+                                    .padding(.bottom, 20)
+                                
+                            }
+                           
                             if index == vm.pokemonList.count - 1 {
                                 if vm.isLoading {
                                     ProgressView("Loading more characters...")
                                         .accentColor(.white)
                                 }
                             }
-                        
+                            
                         }
                     }
+
                 }
             }
     }

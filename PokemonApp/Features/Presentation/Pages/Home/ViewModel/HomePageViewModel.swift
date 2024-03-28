@@ -13,6 +13,7 @@ import Observation
     private let useCase: PokemonUseCase
     
     var pokemonList: [PokemonBusinessModel] = []
+    var pokemonDetails: DetailPokemonBusinessModel?
     
     var viewError: AppError?
     var hasError: Bool = false
@@ -21,10 +22,6 @@ import Observation
     private var currentPage: Int = 1
     
     
-   
-   
-    
- 
     init(useCase: PokemonUseCase = DefaultPokemonUseCase()) {
         self.useCase = useCase
     }
@@ -49,16 +46,12 @@ import Observation
         }
     }
     
-    func getDetailsPokemon(pokemon: PokemonBusinessModel) async {
-        let id = getPokemonIndex(pokemon: pokemon)
-        
-        do {
-           let response = try await useCase.getDetailedPokemon(id: id)
-            
-        } catch {
-            
+    func getDetailsPokemon(id: Int)  {
+        useCase.getDetailedPokemon(id: id) { data in
+            self.pokemonDetails = data
         }
     }
+    
     
      func getPokemonIndex(pokemon: PokemonBusinessModel) -> Int {
         if let index = self.pokemonList.firstIndex(of: pokemon) {
@@ -66,7 +59,6 @@ import Observation
         }
         return 0
     }
-        
-  
-}
 
+        
+}

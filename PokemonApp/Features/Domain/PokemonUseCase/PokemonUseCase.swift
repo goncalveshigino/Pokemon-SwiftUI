@@ -9,8 +9,8 @@ import Foundation
 
 protocol PokemonUseCase {
     func getPokemon(pageNumber: String?) async throws -> PokemonListBusinessModel
-    func getDetailedPokemon(id: Int) async throws -> DetailPokemonListBusinessModel
-    func searchCharacter(by name: String, and pageNumber: String?) async throws -> PokemonListBusinessModel
+    func getDetailedPokemon(id: Int, completion: @escaping (DetailPokemonBusinessModel) -> ())
+    func searchPokemon(by name: String) async throws -> DetailPokemonBusinessModel
 }
 
 
@@ -31,19 +31,18 @@ class DefaultPokemonUseCase: PokemonUseCase {
         }
     }
     
-    func getDetailedPokemon(id: Int) async throws -> DetailPokemonListBusinessModel {
-        do {
-            let response = try await repository.getDetailedPokemon(id: id)
-            return DetailPokemonListBusinessModel(response: response)
-        } catch {
-            throw error
+    
+    func getDetailedPokemon(id: Int, completion: @escaping (DetailPokemonBusinessModel) -> ()) {
+        repository.getDetailedPokemon(id: id) { response in
+            let businessModel = DetailPokemonBusinessModel(response: response)
+            completion(businessModel)
         }
     }
     
-    func searchCharacter(by name: String, and pageNumber: String?) async throws -> PokemonListBusinessModel {
+    func searchPokemon(by name: String) async throws -> DetailPokemonBusinessModel {
         do {
-            let response = try await repository.searchCharacter(by: name, and: pageNumber)
-            return PokemonListBusinessModel(response: response)
+            let response = try await repository.searchPokemon(by: name)
+            return DetailPokemonBusinessModel(response: response)
         } catch {
             throw error
         }

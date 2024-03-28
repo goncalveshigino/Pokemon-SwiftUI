@@ -9,14 +9,15 @@ import Foundation
 
 protocol PokemonRepository {
     func getPokemon(pageNumber: String?) async throws -> PokemonListResponse
-    func getDetailedPokemon(id: Int) async throws -> DetailPokemonResponse
-    func searchCharacter(by name: String, and pageNumber: String?) async throws -> PokemonListResponse
+    func getDetailedPokemon(id: Int,completion: @escaping (DetailPokemonResponse) -> ())
+    func searchPokemon(by name: String) async throws -> DetailPokemonResponse
 }
 
 
 
 
 class DefaultPokemonRepository: PokemonRepository {
+   
     
     private let apiService: ApiService
     private let cache = DefaultNSCacheStorageDatasource<String, PokemonListResponse>()
@@ -39,19 +40,20 @@ class DefaultPokemonRepository: PokemonRepository {
         }
     }
     
-    func getDetailedPokemon(id: Int) async throws -> DetailPokemonResponse {
-        do {
-            let endpoint = "https://pokeapi.co/api/v2/pokemon/\(id)/"
-            let response: DetailPokemonResponse = try await apiService.getDataFromGetRequest(from: endpoint)
-            return response
-        } catch {
-            throw error
+    func getDetailedPokemon(id: Int,completion: @escaping (DetailPokemonResponse) -> ())  {
+        let endpoint = "https://pokeapi.co/api/v2/pokemon/\(id)/"
+         apiService.fetchData(url: endpoint, model: DetailPokemonResponse.self) { data in
+            completion(data)
+             print(data)
+        } failure: { error in
+            print("error")
         }
     }
     
-    func searchCharacter(by name: String, and pageNumber: String?) async throws -> PokemonListResponse {
+    func searchPokemon(by name: String) async throws -> DetailPokemonResponse {
         do {
-            return try await apiService.getDataFromGetRequest(from: getEndPointForPagination(by: name, and: pageNumber))
+            let endpoint = RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.name)\(name)"
+            return try await apiService.getDataFromGetRequest(from: endpoint)
         } catch {
             throw error
         }
@@ -66,13 +68,5 @@ extension DefaultPokemonRepository {
     
     private func save(with pageNumber: String, response: PokemonListResponse) {
         cache[pageNumber] = response
-    }
-    
-    private func getEndPointForPagination(by name: String, and pageNumber: String?) -> String {
-        if let pageNumber = pageNumber {
-            return RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.name)\(name)" + "\(RemoteURL.searchPagination)\(pageNumber)"
-        } else {
-            return RemoteURL.baseUrl + RemoteURL.pokemon + "\(RemoteURL.name)\(name)"
-        }
     }
 }
