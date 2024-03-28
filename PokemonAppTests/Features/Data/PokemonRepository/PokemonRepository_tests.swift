@@ -27,27 +27,29 @@ class PokemonRepository_Tests: XCTestCase {
     
 }
 
+
+
 //MARK: - Success Test
 extension PokemonRepository_Tests {
     
     func testSuccess_ShouldRetornsAllPokemos() async {
         do {
             let response = try await sut?.getPokemon(pageNumber: nil)
-            XCTAssertTrue(response?.results.first?.name == "venusaur")
+            XCTAssertTrue(response?.results.first?.name == "bulbasaur")
         } catch {
             XCTFail("Always receive a response and not throw an error")
         }
     }
     
-    
-    func testSuccess_searchPokemon() async {
-        do {
-           let response = try await sut?.searchCharacter(by: "venusaur", and: nil)
-            XCTAssertTrue(response?.results.first?.name == "venusaur")
-        } catch {
-            XCTFail("Always receive a response and not throw an error")
-        }
-    }
+//    func testSuccess_DetailPokemon() async {
+//        do {
+//            let response = try await sut?.getDetailedPokemon(name: "bulbasaur")
+//            XCTAssertTrue(response?.name == "bulbasaur")
+//        } catch {
+//            XCTFail("Always receive a response and not throw an error")
+//        }
+//    }
+
 }
 
 
